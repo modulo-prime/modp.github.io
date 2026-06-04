@@ -4,28 +4,461 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="modulo prime builds compact, secure systems software and cryptography-adjacent tools.">
+  <title>modulo prime | systems software</title>
   <style>
-   body { font-family: --apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; }
+    :root {
+      color-scheme: dark;
+      --bg: #050505;
+      --panel: #0b0b0b;
+      --panel-2: #101010;
+      --text: #e8e8e8;
+      --muted: #9a9a9a;
+      --faint: #707070;
+      --line: #333333;
+      --hot: #b8b8b8;
+      --cold: #ffffff;
+      --warn: #808080;
+      --ink: #050505;
+      --radius: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--bg);
+    }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    a {
+      color: inherit;
+      text-decoration-color: var(--hot);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 4px;
+    }
+
+    a:hover {
+      color: var(--cold);
+      text-decoration-color: var(--cold);
+    }
+
+    .site-shell {
+      width: min(1160px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .mark::before {
+      content: "%";
+      width: auto;
+      height: auto;
+      color: var(--cold);
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .site-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 14px 22px;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+    }
+
+    .site-nav a {
+      text-decoration: none;
+    }
+
+    .hero {
+      display: flex;
+      min-height: calc(100vh - 82px);
+      padding: 64px 0 48px;
+    }
+
+    .hero-copy {
+      display: flex;
+      width: min(880px, 100%);
+      min-width: 0;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .kicker,
+    .section-label {
+      margin: 0 0 14px;
+      color: var(--cold);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: none;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      overflow-wrap: anywhere;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: 70px;
+      line-height: 1.02;
+      font-weight: 700;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.08;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .lede {
+      max-width: 700px;
+      margin: 28px 0 0;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.45;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 34px;
+    }
+
+    .button,
+    .button-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .button {
+      color: var(--ink);
+      background: var(--cold);
+    }
+
+    .button:hover {
+      color: var(--ink);
+      background: var(--text);
+      border-color: var(--text);
+    }
+
+    .button-secondary {
+      color: var(--text);
+      background: transparent;
+    }
+
+    .button-secondary:hover {
+      color: var(--cold);
+      border-color: var(--cold);
+    }
+
+    .section {
+      padding: 62px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 0.88fr) minmax(320px, 1.12fr);
+      gap: 42px;
+      align-items: start;
+    }
+
+    .section-copy {
+      max-width: 640px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .plain-list {
+      display: grid;
+      gap: 13px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .plain-list li {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 18px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .plain-list strong {
+      color: var(--cold);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+    }
+
+    .plain-list p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .artifact-list {
+      display: grid;
+      gap: 14px;
+      margin: 28px 0 0;
+    }
+
+    .artifact {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 17px 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      text-decoration: none;
+    }
+
+    .artifact:hover {
+      color: var(--text);
+      border-color: var(--cold);
+    }
+
+    .artifact strong {
+      display: block;
+      color: var(--text);
+      font-size: 18px;
+    }
+
+    .artifact span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .artifact code {
+      color: var(--cold);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+    }
+
+    .faq {
+      display: grid;
+      gap: 0;
+      margin: 26px 0 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .faq details {
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .faq summary {
+      cursor: pointer;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .faq p {
+      max-width: 760px;
+      margin: 12px 0 0;
+      color: var(--muted);
+    }
+
+    .site-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 0 36px;
+      border-top: 1px solid var(--line);
+      color: var(--faint);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+        padding-top: 46px;
+      }
+
+      h1 {
+        font-size: 58px;
+      }
+
+    }
+
+    @media (max-width: 620px) {
+      .site-shell {
+        width: min(100% - 28px, 1160px);
+      }
+
+      .site-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .site-nav {
+        justify-content: flex-start;
+      }
+
+      h1 {
+        font-size: 44px;
+        line-height: 1;
+      }
+
+      h2 {
+        font-size: 28px;
+      }
+
+      .lede {
+        font-size: 18px;
+      }
+
+
+      .plain-list li,
+      .artifact {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
-  <title>mod p</title>
 </head>
 <body>
-  <h1>modulo prime</h1>
-  <p>Delivering simple, secure tools for all.</p>
-  <hr>
-  FAQ:
-  <br>
-  <br>
-  <em>What is modulo prime's area of expertise?</em>
-  <br>
-  <p>Modulo a prime</p>
-  <br>
-  <em>How can I get in touch with modulo prime team?</em>
-  <br>
-  <p>Check out our <a href="https://github.com/modulo-prime">github</a> or <a href="mailto:holla@modp.io?subject=holla">holla</a> at us.</p>
-  <br>
-  <em>When airdrop?</em>
-  <br>
-  <p>Me: (sigh...)</p>
+  <div class="site-shell">
+    <header class="site-header" aria-label="Site header">
+      <a class="mark" href="/">mod p</a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="#work">work</a>
+        <a href="#faq">faq</a>
+        <a href="https://github.com/modulo-prime">github</a>
+        <a href="mailto:holla@modp.io?subject=holla">contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="kicker">modp(7)</p>
+          <h1 id="hero-title">systems software with a finite field bias.</h1>
+          <p class="lede">We build compact, security-shaped tools for protocol work, low-level interfaces, and infrastructure where small mistakes become expensive.</p>
+          <div class="hero-actions" aria-label="Contact actions">
+            <a class="button" href="https://github.com/modulo-prime">github/modulo-prime</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="work" aria-labelledby="work-title">
+        <p class="section-label">work(1)</p>
+        <div class="split">
+          <div>
+            <h2 id="work-title">Small pieces of systems software.</h2>
+            <p class="section-copy">Modulo prime works near protocol boundaries, data formats, and low-level tools. The preference is for code that is small enough to read and boring enough to keep.</p>
+          </div>
+          <ul class="plain-list">
+            <li>
+              <strong>01</strong>
+              <p>Reference code, fixtures, and test vectors for protocol work.</p>
+            </li>
+            <li>
+              <strong>02</strong>
+              <p>Command-line tools and libraries with narrow interfaces.</p>
+            </li>
+            <li>
+              <strong>03</strong>
+              <p>Reviews and cleanup around serialization, bounds, and edge cases.</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="artifacts" aria-labelledby="artifacts-title">
+        <p class="section-label">source(5)</p>
+        <h2 id="artifacts-title">Source is the public surface.</h2>
+        <div class="artifact-list">
+          <a class="artifact" href="https://github.com/modulo-prime">
+            <span>
+              <strong>GitHub organization</strong>
+              <span>Code, experiments, and whatever is public enough to survive daylight.</span>
+            </span>
+            <code>git</code>
+          </a>
+        </div>
+      </section>
+
+      <section class="section" id="faq" aria-labelledby="faq-title">
+        <p class="section-label">faq(7)</p>
+        <h2 id="faq-title">Questions with short answers.</h2>
+        <div class="faq">
+          <details open>
+            <summary>What is modulo prime's area of expertise?</summary>
+            <p>Modulo a prime. More usefully: compact systems software, finite-field flavored protocol work, and secure tools with a small attack surface.</p>
+          </details>
+          <details>
+            <summary>How can I get in touch with the modulo prime team?</summary>
+            <p>Check out <a href="https://github.com/modulo-prime">github/modulo-prime</a> or <a href="mailto:holla@modp.io?subject=holla">holla@modp.io</a>.</p>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>modulo prime</span>
+      <span>simple secure tools for all</span>
+    </footer>
+  </div>
 </body>
 </html>
